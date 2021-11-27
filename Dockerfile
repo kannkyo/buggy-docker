@@ -9,7 +9,10 @@ LABEL password=secret123
 ADD ./ /usr/local/apache2/htdocs/
 
 # CIS 4.7 Ensure update instructions are not use alone in the Dockerfile (Not Scored)
-RUN apt-get update
+RUN apt-get update -y
+
+# Add package with vuls
+RUN apt-get install -y cron
 
 # CIS 4.6 Ensure that HEALTHCHECK instructions have been added to container images (Scored)
 # HEALTHCHECK
