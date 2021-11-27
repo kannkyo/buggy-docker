@@ -23,18 +23,22 @@ jobs:
         run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: scan by docker benchmark
+        id: benchmark_dockerfile
         uses: sysdiglabs/benchmark-dockerfile@v1.0.0
+
+      - name: output docker benchmark scan results
+        run: echo '${{ steps.benchmark_dockerfile.outputs.violation_report }}' | jq '.cis_docker_benchmark_violation_report'
 
       - name: scan by trivy
         uses: aquasecurity/trivy-action@0.2.0
         with:
-          image-ref: "${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          format: "template"
-          template: "@/contrib/sarif.tpl"
-          output: "trivy-results.sarif"
-          severity: "CRITICAL,HIGH"
+          image-ref: '${{ env.IMAGE_NAME }}:${{ github.sha }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
 
       - name: upload trivy scan results to gitHub security tab
         uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: "trivy-results.sarif"
+          sarif_file: 'trivy-results.sarif'
