@@ -1,0 +1,51 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "docker-build",
+      "label": "docker: build",
+      "platform": "node",
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/Dockerfile",
+        "context": "${workspaceFolder}",
+        "pull": true
+      }
+    },
+    {
+      "type": "docker-run",
+      "label": "docker: release",
+      "dependsOn": [
+        "docker: build"
+      ],
+      "platform": "node"
+    },
+    {
+      "type": "docker-run",
+      "label": "docker: debug",
+      "dependsOn": [
+        "docker: build"
+      ],
+      "dockerRun": {
+        "env": {
+          "DEBUG": "*",
+          "NODE_ENV": "development"
+        }
+      },
+      "node": {
+        "enableDebugging": true
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "http_user",
+      "description": "プロキシユーザ"
+    },
+    {
+      "type": "promptString",
+      "id": "http_password",
+      "description": "プロキシユーザ"
+    }
+  ]
+}

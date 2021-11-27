@@ -1,0 +1,12 @@
+name: docker ci
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        run: docker build . --file Dockerfile --tag boilerplate-docker:$(date +%s)

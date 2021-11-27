@@ -1,0 +1,9 @@
+{
+    "yaml.schemaStore.enable": true,
+    "yaml.schemas": {
+        ".schemas/container-structure-test.json": [
+            "*.test.yaml",
+            "*.test.yml"
+        ]
+    }
+}
