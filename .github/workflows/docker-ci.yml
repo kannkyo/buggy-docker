@@ -25,6 +25,13 @@ jobs:
       - name: scan by docker benchmark
         id: benchmark_dockerfile
         uses: sysdiglabs/benchmark-dockerfile@v1.0.0
+        with:
+          # CIS 4.3 Ensure that unnecessary packages are not installed in the container (Not Scored)
+          disallowedPackages: 'httpd, apt'
+          # CIS 4.2 Ensure that containers use only trusted base images (Not Scored)
+          trustedBaseImages: 'httpd, alpine'
+          # CIS 4.10 Ensure secrets are not stored in Dockerfiles (Not Scored)
+          secretPatterns: 'secret*'
 
       - name: output docker benchmark scan results
         run: echo '${{ steps.benchmark_dockerfile.outputs.violation_report }}' | jq '.cis_docker_benchmark_violation_report'
