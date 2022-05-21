@@ -51,3 +51,16 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: "trivy-results.sarif"
+
+      - name: scan image by anchore
+        id: anchore
+        uses: anchore/scan-action@v3
+        with:
+          image: "${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          path: "."
+          acs-report-enable: true
+
+      - name: upload anchore scan results to gitHub security tab
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ steps.anchore.outputs.sarif }}
