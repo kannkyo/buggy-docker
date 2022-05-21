@@ -13,10 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: build
         run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:$(date +%s)
 
-  scan:
+  benchmark:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -38,10 +39,18 @@ jobs:
       - name: output docker benchmark scan results
         run: echo '${{ steps.benchmark_dockerfile.outputs.violation_report }}' | jq '.cis_docker_benchmark_violation_report'
 
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build
+        run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:trivy
+
       - name: scan by trivy
         uses: aquasecurity/trivy-action@0.2.0
         with:
-          image-ref: "${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          image-ref: "${{ env.IMAGE_NAME }}:trivy"
           format: "template"
           template: "@/contrib/sarif.tpl"
           output: "trivy-results.sarif"
@@ -52,11 +61,19 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
+  anchore-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build
+        run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:anchore-image
+
       - name: scan image by anchore
         id: anchore-image
         uses: anchore/scan-action@v3
         with:
-          image: "${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          image: "${{ env.IMAGE_NAME }}:anchore-image"
           severity-cutoff: low
           fail-build: false
           acs-report-enable: true
@@ -65,6 +82,11 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: ${{ steps.anchore-image.outputs.sarif }}
+
+  anchore-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
       - name: scan files by anchore
         id: anchore-files
