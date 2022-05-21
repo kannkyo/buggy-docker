@@ -111,7 +111,7 @@ jobs:
       - name: scan Dockerfile by hadolint
         uses: hadolint/hadolint-action@v2.0.0
         with:
-          dockerfile: ./Dockerfile
+          recursive: true
           format: sarif
           output-file: hadolint-results.sarif
           no-fail: false
