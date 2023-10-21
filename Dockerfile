@@ -1,5 +1,5 @@
 # CIS 4.2 Ensure that containers use only trusted base images (Not Scored)
-FROM httpd:2.4.51
+FROM httpd:2.4.58
 
 # CIS 4.10 Ensure secrets are not stored in Dockerfiles (Not Scored)
 LABEL password=secret123
